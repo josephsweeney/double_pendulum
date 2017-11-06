@@ -70,7 +70,7 @@ class DoublePendulum {
 
     otherEnd(pos, l, theta) {
 	let x = pos.x-(l*Math.sin(theta))
-	let y = pos.y+(l*Math.cos(theta))-(this.width/2)
+	let y = pos.y+(l*Math.cos(theta))
 	return {x:x, y:y}
     }
 
