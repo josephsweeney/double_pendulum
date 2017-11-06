@@ -1,46 +1,55 @@
 var g = 1000
 
-class Pendulum {
-    constructor(length, ctx, parent) {
-	this.parent = parent ? parent : null
-	this.mass = 1
-	this.length = length
-	this.width  = 5
-	this.pos = {x:200, y:200}
-	this.theta = Math.PI/2
-	this.thetaOriginal = this.theta
-	this.oldTheta = this.theta
+
+class DoublePendulum {
+    constructor(ctx, l1, l2, theta1, theta2) {
 	this.ctx = ctx
-	this.time = 0
+	this.mass = 1
+	this.l1 = l1
+	this.l2 = l2
+	this.theta1 = theta1
+	this.theta2 = theta2
+	this.width  = 5
+	this.pos1 = {x:200, y:200}
+	this.pos2 = this.otherEnd(this.pos1, l1, theta1)
+	this.oldTheta1 = this.theta1
+	this.oldTheta2 = this.theta2
     }
 
     draw() {
-	this.ctx.translate(this.pos.x+(this.width/2), this.pos.y+(this.width/2))
-	this.ctx.rotate(this.theta)
+	// Draw first pendulum
+	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
+	this.ctx.rotate(this.theta1)
+	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l1)
+	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.length)
-	// Reset to Identity
+	// Draw second pendulum
+	this.ctx.translate(this.pos2.x+(this.width/2), this.pos2.y+(this.width/2))
+	this.ctx.rotate(this.theta2)
+	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     clear() {
-	this.ctx.translate(this.pos.x+(this.width/2), this.pos.y+(this.width/2))
-	this.ctx.rotate(this.oldTheta)
-
-	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.length+2)
-	// Reset to Identity
+	// Clear first
+	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
+	this.ctx.rotate(this.oldTheta1)
+	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l1+2)
+	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+	// Clear second
+	this.ctx.translate(this.pos2.x+(this.width/2), this.pos2.y+(this.width/2))
+	this.ctx.rotate(this.oldTheta2)
+	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l2+2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     update(dt) {
-	if(this.parent) {
-	    this.pos = this.parent.otherEnd()
-	    console.log(this.pos)
-	}
+	this.updateThetas(dt)
 	
-	this.time += dt
-	this.theta = this.getTheta()
-	this.oldTheta = this.theta
+	this.updatePos2()
+	
+	this.oldTheta1 = this.theta1
+	this.oldTheta2 = this.theta2
     }
 
     frame(dt) {
@@ -49,14 +58,19 @@ class Pendulum {
 	this.draw()
     }
 
-    getTheta() {
-	let res = this.thetaOriginal * (Math.cos(Math.sqrt((g/this.length))*this.time))
-	return res
+    updateThetas(dt) {
+	// Implement actual double pendulum equations of motion using Runge-Kutta algorithm
+	this.theta1 += dt
+	this.theta2 -= dt
     }
 
-    otherEnd() {
-	let x = this.pos.x-(this.length*Math.sin(this.theta))
-	let y = this.pos.y+(this.length*Math.cos(this.theta))
+    updatePos2() {
+	this.pos2 = this.otherEnd(this.pos1, this.l1, this.theta1)
+    }
+
+    otherEnd(pos, l, theta) {
+	let x = pos.x-(l*Math.sin(theta))
+	let y = pos.y+(l*Math.cos(theta))-(this.width/2)
 	return {x:x, y:y}
     }
 
@@ -69,11 +83,9 @@ function init() {
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = "black"
 
-    let original = new Pendulum(50, ctx)
+    let pendulum = new DoublePendulum(ctx, 40, 50, 0, Math.PI/4)
     
-    objects.push(original)
-
-    objects.push(new Pendulum(40, ctx, original))
+    objects.push(pendulum)
     
     
 
