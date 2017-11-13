@@ -63,22 +63,32 @@ class DoublePendulum {
 
     updateThetas(dt) {
 	// Implement actual double pendulum equations of motion using Runge-Kutta algorithm
-    	this.theta1 += dt
-    	this.theta2 -= dt
+	let newOmega1 = rungeKutta(this.AngAcc1, this.omega1, dt)
+	let newOmega2 = rungeKutta(this.AngAcc2, this.omega2, dt)
+    	this.theta1 += dt*newOmega1
+    	this.theta2 -= dt*newOmega2
     }
 
-    AngAcc1(){
+    rungeKutta(f, x, h) {
+	let a = f(x)
+	let b = f(x+((h/2)*a))
+	let c = f(x+((h/2)*b))
+	let d = f(x+(h*c))
+	return x + ((h/6) * (a + 2*b + 2*c + d))
+    }
+
+    AngAcc1(omega1){
       num = -9.8*(2*this.m1+this.m2)*Math.sin(this.theta1) - this.m2*9.8* \
       Math.sin(this.theta1-2*this.theta2)-2*Math.sin(this.theta1-this.theta2)* \
-      this.m2*(Math.pow(this.omega2,2)*this.l2+Math.pow(this.omega1,2)*this.l1*\
-      Math.cos(this.omega1-this.omega2))
+      this.m2*(Math.pow(this.omega2,2)*this.l2+Math.pow(omega1,2)*this.l1*\
+      Math.cos(omega1-this.omega2))
       den = this.l1*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
       return num/den
     }
 
-    AngAcc2(){
+    AngAcc2(omega2){
       num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*\
-      (this.m1+this.m2)+9.8*(this.m1+this.m2)*Math.cos(this.theta1)+Math.pow(this.omega2,2)\
+      (this.m1+this.m2)+9.8*(this.m1+this.m2)*Math.cos(this.theta1)+Math.pow(omega2,2)\
       *this.l2*this.m2*Math.cos(this.theta1-this.theta2))
       den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
       return num/den
