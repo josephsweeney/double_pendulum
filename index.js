@@ -14,6 +14,8 @@ class DoublePendulum {
 	this.pos2 = this.otherEnd(this.pos1, l1, theta1)
 	this.oldTheta1 = this.theta1
 	this.oldTheta2 = this.theta2
+	this.omega1 = 0
+	this.omega2 = 0
     }
 
     draw() {
