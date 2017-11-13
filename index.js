@@ -4,7 +4,8 @@ var g = 1000
 class DoublePendulum {
     constructor(ctx, l1, l2, theta1, theta2) {
 	this.ctx = ctx
-	this.mass = 1
+	this.m1 = 1
+  this.m2 = 1
 	this.l1 = l1
 	this.l2 = l2
 	this.theta1 = theta1
@@ -47,9 +48,9 @@ class DoublePendulum {
 
     update(dt) {
 	this.updateThetas(dt)
-	
+
 	this.updatePos2()
-	
+
 	this.oldTheta1 = this.theta1
 	this.oldTheta2 = this.theta2
     }
@@ -62,8 +63,25 @@ class DoublePendulum {
 
     updateThetas(dt) {
 	// Implement actual double pendulum equations of motion using Runge-Kutta algorithm
-	this.theta1 += dt
-	this.theta2 -= dt
+    	this.theta1 += dt
+    	this.theta2 -= dt
+    }
+
+    AngAcc1(){
+      num = -9.8*(2*this.m1+this.m2)*Math.sin(this.theta1) - this.m2*9.8* \
+      Math.sin(this.theta1-2*this.theta2)-2*Math.sin(this.theta1-this.theta2)* \
+      this.m2*(Math.pow(this.omega2,2)*this.l2+Math.pow(this.omega1,2)*this.l1*\
+      Math.cos(this.omega1-this.omega2))
+      den = this.l1*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
+      return num/den
+    }
+
+    AngAcc2(){
+      num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*\
+      (this.m1+this.m2)+9.8*(this.m1+this.m2)*Math.cos(this.theta1)+Math.pow(this.omega2,2)\
+      *this.l2*this.m2*Math.cos(this.theta1-this.theta2))
+      den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
+      return num/den
     }
 
     updatePos2() {
@@ -86,10 +104,10 @@ function init() {
     ctx.fillStyle = "black"
 
     let pendulum = new DoublePendulum(ctx, 40, 50, 0, Math.PI/4)
-    
+
     objects.push(pendulum)
-    
-    
+
+
 
     frame()
 
@@ -98,7 +116,7 @@ function init() {
 let d = new Date()
 let time = d.getTime()
 let oldTime = time
-    
+
 function frame() {
     let d = new Date()
     time = d.getTime()
@@ -109,7 +127,7 @@ function frame() {
 
     oldTime = time
     requestAnimationFrame(frame)
-    
+
 }
 
 
