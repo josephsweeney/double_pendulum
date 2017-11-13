@@ -78,19 +78,18 @@ class DoublePendulum {
     }
 
     AngAcc1(omega1){
-      num = -9.8*(2*this.m1+this.m2)*Math.sin(this.theta1) - this.m2*9.8* \
-      Math.sin(this.theta1-2*this.theta2)-2*Math.sin(this.theta1-this.theta2)* \
-      this.m2*(Math.pow(this.omega2,2)*this.l2+Math.pow(omega1,2)*this.l1*\
-      Math.cos(omega1-this.omega2))
-      den = this.l1*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
+      let num = -9.8*(2*this.m1+this.m2)*Math.sin(this.theta1)
+      num -= this.m2*9.8*Math.sin(this.theta1-2*this.theta2)
+      num -= 2*Math.sin(this.theta1-this.theta2)*this.m2*(Math.pow(this.omega2,2)*this.l2+Math.pow(omega1,2)*this.l1*Math.cos(omega1-this.omega2))
+      let den = this.l1*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
       return num/den
     }
 
     AngAcc2(omega2){
-      num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*\
-      (this.m1+this.m2)+9.8*(this.m1+this.m2)*Math.cos(this.theta1)+Math.pow(omega2,2)\
-      *this.l2*this.m2*Math.cos(this.theta1-this.theta2))
-      den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
+      let num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*(this.m1+this.m2)
+      num += 9.8*(this.m1+this.m2)*Math.cos(this.theta1)
+      num+= Math.pow(omega2,2)*this.l2*this.m2*Math.cos(this.theta1-this.theta2))
+      let den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
       return num/den
     }
 
