@@ -86,9 +86,9 @@ class DoublePendulum {
     }
 
     AngAcc2(omega2){
-      let num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*(this.m1+this.m2)
+      let num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*(this.m1+this.m2))
       num += 9.8*(this.m1+this.m2)*Math.cos(this.theta1)
-      num+= Math.pow(omega2,2)*this.l2*this.m2*Math.cos(this.theta1-this.theta2))
+      num+= Math.pow(omega2,2)*this.l2*this.m2*Math.cos(this.theta1-this.theta2)
       let den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
       return num/den
     }
