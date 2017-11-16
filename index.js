@@ -34,13 +34,13 @@ class DoublePendulum {
     draw() {
 	// Draw first pendulum
 	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
-	this.ctx.rotate(this.theta1)
+	this.ctx.rotate(-this.theta1)
 	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l1)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 	// Draw second pendulum
 	this.ctx.translate(this.pos2.x+(this.width/2), this.pos2.y+(this.width/2))
-	this.ctx.rotate(this.theta2)
+	this.ctx.rotate(-this.theta2)
 	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -48,12 +48,12 @@ class DoublePendulum {
     clear() {
 	// Clear first
 	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
-	this.ctx.rotate(this.oldTheta1)
+	this.ctx.rotate(-this.oldTheta1)
 	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l1+2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
 	// Clear second
 	this.ctx.translate(this.pos2.x+(this.width/2), this.pos2.y+(this.width/2))
-	this.ctx.rotate(this.oldTheta2)
+	this.ctx.rotate(-this.oldTheta2)
 	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l2+2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -104,15 +104,17 @@ class DoublePendulum {
     }
 
     AngAcc2(omega2){
-	let num = 2*Math.sin(this.theta1-this.theta2)*(Math.pow(this.omega1,2)*this.l1*(this.m1+this.m2))
-	num += g*(this.m1+this.m2)*Math.cos(this.theta1)
-	num+= Math.pow(omega2,2)*this.l2*this.m2*Math.cos(this.theta1-this.theta2)
+	let num1 = 2*Math.sin(this.theta1-this.theta2)
+	let num2 = (Math.pow(this.omega1,2)*this.l1*(this.m1+this.m2))
+	num2 += g*(this.m1+this.m2)*Math.cos(this.theta1)
+	num2 += Math.pow(omega2,2)*this.l2*this.m2*Math.cos(this.theta1-this.theta2)
+	let num = num1 * num2
 	let den = this.l2*(2*this.m1+this.m2-this.m2*Math.cos(2*this.theta1-2*this.theta2))
 	return den != 0 ? num/den : 0
     }
 
     updatePos2() {
-	this.pos2 = this.otherEnd(this.pos1, this.l1, this.theta1)
+	this.pos2 = this.otherEnd(this.pos1, this.l1, -this.theta1)
     }
 
     otherEnd(pos, l, theta) {
@@ -130,7 +132,7 @@ function init() {
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = "black"
 
-    let pendulum = new DoublePendulum(ctx, 40, 60, 0, Math.PI/4)
+    let pendulum = new DoublePendulum(ctx, 40, 60, Math.PI/2, Math.PI/4)
 
     objects.push(pendulum)
 
