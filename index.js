@@ -1,4 +1,4 @@
-var g = 100
+var g = 250
 
 
 function bound(theta) {
@@ -16,15 +16,19 @@ function bound(theta) {
 class DoublePendulum {
     constructor(ctx, l1, l2, theta1, theta2) {
 	this.ctx = ctx
-	this.m1 = 10*l1
-	this.m2 = 10*l2
+	this.m1 = 50
+	this.m2 = 50
 	this.l1 = l1
 	this.l2 = l2
 	this.theta1 = theta1
 	this.theta2 = theta2
 	this.width  = 5
-	this.pos1 = {x:200, y:200}
-	this.pos2 = this.otherEnd(this.pos1, l1, theta1)
+	this.pos1 = {x:canvas.width/2, y:canvas.height/4}
+	this.pos2 = this.otherEnd(this.pos1, l1, -theta1)
+	this.end1 = this.pos2
+	this.end2 = this.otherEnd(this.end1, l2, -theta2)
+	this.trail1 = []
+	this.trail2 = []
 	this.oldTheta1 = this.theta1
 	this.oldTheta2 = this.theta2
 	this.omega1 = 0
@@ -33,6 +37,7 @@ class DoublePendulum {
 
     draw() {
 	// Draw first pendulum
+	this.ctx.fillStyle = 'black'
 	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
 	this.ctx.rotate(-this.theta1)
 	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l1)
@@ -43,25 +48,35 @@ class DoublePendulum {
 	this.ctx.rotate(-this.theta2)
 	this.ctx.fillRect(-1*this.width/2, -1*this.width/2, this.width, this.l2)
 	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+	this.drawTrail()
     }
 
+
     clear() {
-	// Clear first
-	this.ctx.translate(this.pos1.x+(this.width/2), this.pos1.y+(this.width/2))
-	this.ctx.rotate(-this.oldTheta1)
-	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l1+2)
-	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-	// Clear second
-	this.ctx.translate(this.pos2.x+(this.width/2), this.pos2.y+(this.width/2))
-	this.ctx.rotate(-this.oldTheta2)
-	this.ctx.clearRect((-1*this.width/2)-1, (-1*this.width/2)-1, this.width+2, this.l2+2)
-	this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+	this.ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
+
+    drawTrail() {
+	this.ctx.beginPath()
+	this.ctx.strokeStyle = 'blue';
+	this.trail1.map((pos) => {this.ctx.lineTo(pos.x, pos.y);this.ctx.moveTo(pos.x, pos.y)})
+	this.ctx.stroke()
+	this.ctx.closePath()
+
+	this.ctx.beginPath()
+	this.ctx.strokeStyle = 'red';
+	this.trail2.map((pos) => {this.ctx.lineTo(pos.x, pos.y);this.ctx.moveTo(pos.x, pos.y)})
+	this.ctx.stroke()
+	this.ctx.closePath()
+    }
+
 
     update(dt) {
 	this.updateThetas(dt)
 
 	this.updatePos2()
+	this.updateTrail()
 
 	this.oldTheta1 = this.theta1
 	this.oldTheta2 = this.theta2
@@ -116,6 +131,22 @@ class DoublePendulum {
     updatePos2() {
 	this.pos2 = this.otherEnd(this.pos1, this.l1, -this.theta1)
     }
+    
+    updateTrail() {
+	this.trail1.push(this.end1)
+	this.trail2.push(this.end2)
+
+	let maxLen = 200
+
+	if(this.trail1.length > maxLen)
+	    this.trail1.shift()
+
+	if(this.trail2.length > maxLen)
+	    this.trail2.shift()
+	
+	this.end1 = this.pos2
+	this.end2 = this.otherEnd(this.end1, this.l2, -this.theta2)
+    }
 
     otherEnd(pos, l, theta) {
 	let x = pos.x-(l*Math.sin(theta))
@@ -125,16 +156,21 @@ class DoublePendulum {
 
 }
 
-let objects = []
+let pendulum = null
+let canvas = null
 
 function init() {
-    let canvas = document.getElementById('canvas');
+    canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = "black"
 
-    let pendulum = new DoublePendulum(ctx, 40, 60, Math.PI/2, Math.PI/4)
+    let lengths = Math.min(canvas.width, canvas.height)
+    lengths /= 5
 
-    objects.push(pendulum)
+    pendulum = new DoublePendulum(ctx, lengths, lengths, 3*Math.PI, Math.PI/4)
+
 
 
 
@@ -145,13 +181,16 @@ function init() {
 let d = new Date()
 let time = d.getTime()
 let oldTime = time
+let draw = true
 
 function frame() {
     let d = new Date()
     time = d.getTime()
     let diff = (time-oldTime)/1000
-    for(let i = 0; i<objects.length; i++) {
-	objects[i].frame(diff)
+    diff = diff < 0.1 ? diff : 0.016
+
+    if(draw) {
+	pendulum.frame(diff)
     }
 
     oldTime = time
@@ -161,3 +200,9 @@ function frame() {
 
 
 window.onload = init
+
+
+function mouseDown(event) {
+    
+
+}
