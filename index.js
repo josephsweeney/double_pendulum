@@ -182,6 +182,7 @@ let d = new Date()
 let time = d.getTime()
 let oldTime = time
 let draw = true
+let mouse = {x:0, y:0}
 
 function frame() {
     let d = new Date()
@@ -200,9 +201,44 @@ function frame() {
 
 
 window.onload = init
+window.addEventListener("mousedown", mouseDown)
+window.addEventListener("mousemove", mouseMove)
+window.addEventListener("mouseup", mouseUp)
 
+function inPend1() {
+    let pos = pendulum.pos1
+    let l = pendulum.l1
+
+    return dist(mouse, pos) < l
+}
+
+function dist(p1, p2) {
+    return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y))
+}
 
 function mouseDown(event) {
-    
+    draw = false
+}
 
+function mouseMove(event) {
+    if(!draw) {
+	let oldmouse = mouse
+	mouse = {x:event.clientX, y:event.clientY}
+	let dx = mouse.x - oldmouse.x
+	let dtheta = -dx/100
+	if(inPend1()) {
+	    pendulum.theta1 += dtheta
+	    pendulum.pos2 = pendulum.otherEnd(pendulum.pos1, pendulum.l1, -pendulum.theta1)
+	} else {
+	    pendulum.theta2 += dtheta
+	}
+	pendulum.omega1 = 0
+	pendulum.omega2 = 0
+	pendulum.clear()
+	pendulum.draw()
+    }
+}
+
+function mouseUp(event) {
+    draw = true
 }
