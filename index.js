@@ -1,4 +1,4 @@
-var g = 250
+var g = 300
 
 
 function bound(theta) {
@@ -100,6 +100,14 @@ class DoublePendulum {
 	
 	this.omega1 = newOmega1
 	this.omega2 = newOmega2
+    }
+
+    setTheta1(newtheta) {
+	this.theta1 = bound(newtheta)
+    }
+
+    setTheta2(newtheta) {
+	this.theta2 = bound(newtheta)
     }
 
     rungeKutta(f, x, h) {
@@ -227,15 +235,17 @@ function mouseMove(event) {
 	let dx = mouse.x - oldmouse.x
 	let dtheta = -dx/100
 	if(inPend1()) {
-	    pendulum.theta1 += dtheta
+	    pendulum.setTheta1(pendulum.theta1 + dtheta)
 	    pendulum.pos2 = pendulum.otherEnd(pendulum.pos1, pendulum.l1, -pendulum.theta1)
 	} else {
-	    pendulum.theta2 += dtheta
+	    pendulum.setTheta2(pendulum.theta2 + dtheta)
 	}
 	pendulum.omega1 = 0
 	pendulum.omega2 = 0
 	pendulum.clear()
 	pendulum.draw()
+    } else {
+	mouse = {x:event.clientX, y:event.clientY}
     }
 }
 
