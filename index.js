@@ -142,6 +142,10 @@ class DoublePendulum {
     }
     
     updateTrail() {
+	this.end1 = this.pos2
+	this.end2 = this.otherEnd(this.end1, this.l2, -this.theta2)
+
+
 	this.trail1.push(this.end1)
 	this.trail2.push(this.end2)
 
@@ -153,14 +157,17 @@ class DoublePendulum {
 	if(this.trail2.length > maxLen)
 	    this.trail2.shift()
 	
-	this.end1 = this.pos2
-	this.end2 = this.otherEnd(this.end1, this.l2, -this.theta2)
     }
 
     otherEnd(pos, l, theta) {
 	let x = pos.x-(l*Math.sin(theta))
 	let y = pos.y+(l*Math.cos(theta))
 	return {x:x, y:y}
+    }
+
+    resetTrails() {
+	this.trail1 = []
+	this.trail2 = []
     }
 
 }
@@ -188,7 +195,9 @@ function init() {
 
 }
 
-function doubleInit() {
+var started = false
+function doubleInit(diff) {
+    pendulums = []
     canvas = document.getElementById('canvas');
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
@@ -202,10 +211,13 @@ function doubleInit() {
     pendulum.isFirst = true
     pendulums.push(pendulum)
 
-    pendulum = new DoublePendulum(ctx, lengths, lengths, Math.PI+0.0001, Math.PI/4)
+    pendulum = new DoublePendulum(ctx, lengths, lengths, Math.PI+diff, Math.PI/4)
     pendulums.push(pendulum)
 
-    frame()
+    if(!started) {
+	started = true
+	frame()
+    }
 }
 
 let d = new Date()
@@ -266,6 +278,7 @@ function mouseMove(event) {
 	}
 	pendulum.omega1 = 0
 	pendulum.omega2 = 0
+	pendulum.resetTrails()
 	pendulum.clear()
 	pendulum.draw()
     } else {

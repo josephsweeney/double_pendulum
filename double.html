@@ -1,22 +1,42 @@
 
 <head>
   <script src="index.js"></script>
-  <script> window.onload = doubleInit </script>
-  <style>
-    #next {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  <script>
+    function clicked() {
+    console.log("clicked")
+    let input = document.getElementById("in")
+    doubleInit(parseFloat(input.value))
     }
-    #prev {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+  </script>
+  <style>
+    a, button,input {
+    outline: none;
+    text-decoration: none;
+    display: inline-block;
+    width: 5%;
+    margin-right: 0.625%;
+    text-align: center;
+    line-height: 3;
+    color: black;
+    background: lightgray;
+    }
+    a:hover, button:hover {     
+    background: orange;
+    }
+
+    a:active, button:active {
+    background: #FF6600;
+    color: white;
+    }
+    canvas {
+    float: right;
     }
   </style>
 </head>
 <body>
   <!-- <a id="next" href="double.html"> Next </a> -->
-  <a id="prev" href="index.html"> Prev </a>
+  <a id="prev" style="float:left;" href="index.html"> Prev </a>
+  <input type="text"  id="in"> </input>
+  <button onclick="clicked();">Start</button>
   <canvas id="canvas"></canvas>
 </body>
