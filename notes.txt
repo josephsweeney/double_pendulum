@@ -1,0 +1,26 @@
+Handy links:
+
+https://www.myphysicslab.com/pendulum/double-pendulum-en.html
+
+https://www.myphysicslab.com/explain/runge-kutta-en.html
+
+https://en.wikipedia.org/wiki/Double_pendulum
+
+https://josephsweeney.github.io/double_pendulum/index.html
+
+
+# Presentation
+
+* We accurately modelled a double pendulum system.
+* We started by modelling a single pendulum system. Then attaching another pendulum  onto the end of it.
+* Then we actually figured out the equations of motion of the system.
+  * Talk about the variables that come into play
+* We implemented the runge kutta algorithm to approximate the solution to the differential equation.
+  * This involved changing the form of the diff eq to be in terms of the angular velocity instead of the angle.
+  * The Runge Kutta method outputs the next state of the system given a certain time differential.
+
+
+
+* Then talk about the first demo where you can control the angles of the pendulums.
+
+* Talk about how it is a chaotic system, then show the second demo
