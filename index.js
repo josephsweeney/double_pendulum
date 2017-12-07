@@ -83,7 +83,8 @@ class DoublePendulum {
     }
 
     frame(dt) {
-	this.clear()
+	if(this.isFirst)
+	    this.clear()
 	this.update(dt)
 	this.draw()
     }
@@ -164,7 +165,7 @@ class DoublePendulum {
 
 }
 
-let pendulum = null
+let pendulums = []
 let canvas = null
 
 function init() {
@@ -177,13 +178,34 @@ function init() {
     let lengths = Math.min(canvas.width, canvas.height)
     lengths /= 5
 
-    pendulum = new DoublePendulum(ctx, lengths, lengths, 3*Math.PI, Math.PI/4)
-
+    let pendulum = new DoublePendulum(ctx, lengths, lengths, 3*Math.PI, Math.PI/4)
+    pendulum.isFirst = true
+    pendulums.push(pendulum)
 
 
 
     frame()
 
+}
+
+function doubleInit() {
+    canvas = document.getElementById('canvas');
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = "black"
+
+    let lengths = Math.min(canvas.width, canvas.height)
+    lengths /= 5
+
+    let pendulum = new DoublePendulum(ctx, lengths, lengths, Math.PI, Math.PI/4)
+    pendulum.isFirst = true
+    pendulums.push(pendulum)
+
+    pendulum = new DoublePendulum(ctx, lengths, lengths, Math.PI+0.0001, Math.PI/4)
+    pendulums.push(pendulum)
+
+    frame()
 }
 
 let d = new Date()
@@ -199,7 +221,7 @@ function frame() {
     diff = diff < 0.1 ? diff : 0.016
 
     if(draw) {
-	pendulum.frame(diff)
+	pendulums.forEach((p) => p.frame(diff))
     }
 
     oldTime = time
@@ -208,12 +230,11 @@ function frame() {
 }
 
 
-window.onload = init
 window.addEventListener("mousedown", mouseDown)
 window.addEventListener("mousemove", mouseMove)
 window.addEventListener("mouseup", mouseUp)
 
-function inPend1() {
+function inPend1(pendulum) {
     let pos = pendulum.pos1
     let l = pendulum.l1
 
@@ -225,7 +246,9 @@ function dist(p1, p2) {
 }
 
 function mouseDown(event) {
-    draw = false
+    if(pendulums.length == 1) {
+	draw = false
+    }
 }
 
 function mouseMove(event) {
@@ -234,7 +257,8 @@ function mouseMove(event) {
 	mouse = {x:event.clientX, y:event.clientY}
 	let dx = mouse.x - oldmouse.x
 	let dtheta = -dx/100
-	if(inPend1()) {
+	let pendulum = pendulums[0]
+	if(inPend1(pendulum)) {
 	    pendulum.setTheta1(pendulum.theta1 + dtheta)
 	    pendulum.pos2 = pendulum.otherEnd(pendulum.pos1, pendulum.l1, -pendulum.theta1)
 	} else {
